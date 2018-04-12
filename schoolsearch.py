@@ -16,26 +16,61 @@ def print2(s):
 
 # Takes a criteria and a search type (0-7) and returns a list of strings representing students
 # type:
+# Old Format:
 #     0           1           2        3     4     5     6           7
 # StLastName, StFirstName, Grade, Classroom, Bus, GPA, TLastName, TFirstName
+
+# New Format:
+#     0           1           2        3     4     5 
+# StLastName, StFirstName, Grade, Classroom, Bus, GPA
+# and
+#     0           1          2
+# TLastName, TFirstName, Classroom
+
 def queryStudentsByCriteria(criteria, search_type):
    try:
-      file = open("students.txt", "r")
+      list_file = open("list.txt", "r")
    except:
-      print("Error opening file")
+      print("Error opening list file")
       exit()
+
+   criteria = criteria.upper()
+
    studentList = []
-   for student in file:
+   for student in list_file:
+      student = student[:-2]
       studentData = student.split(",")
+      teacherData = queryTeacherByCriteria(studentData[3], 2) # Will always return a valid classroom if input files are valid
+      studentData.append(teacherData[0])
+      studentData.append(teacherData[1])
       if studentData[search_type] == criteria:
-         studentList.append(student)
+         studentData[1] = studentData[1][+1:]
+         studentList.append(",".join(studentData))
    return studentList
+
+def queryTeacherByCriteria(criteria, search_type):
+   try:
+      teacher_file = open("teachers.txt", "r")
+   except:
+      print("Error opening teacher file")
+      exit()
+
+   criteria = criteria.upper()
+
+   teacherData = []
+   for teacher in teacher_file:
+      teacherData = teacher.split(",")
+      teacherData[1] = teacherData[1][+1:]
+      teacherData[2] = teacherData[2][+1:-2]
+      if(teacherData[search_type] == criteria):
+         return teacherData
+   return []         
 
 # Takes an array of student data strings and prints the student's name, grade, classroom, and teacher
 def printStudentDataByName(studentQuery):
    for s in range(0, len(studentQuery)):
       studentData = studentQuery[s].split(",")
-      print("Student: " + studentData[1] + " " + studentData[0] + "\nGrade: " + studentData[2] + "\nClassroom: " + studentData[3] + "\nTeacher: " + studentData[7][:-2] + " " + studentData[6])
+      print("Student: " + studentData[1] + " " + studentData[0] + "\nGrade: " + studentData[2] + "\nClassroom: " + studentData[3] + "\nTeacher: " + studentData[7] + " " + studentData[6])
 
 # Takes an array of student data strings and prints the student's name and bus route
 def printStudentBusData(studentQuery):
@@ -62,7 +97,7 @@ def printHighestGPAStudent(studentQuery):
       studentData = studentQuery[s].split(",")
       if(float(studentData[5]) > float(highestGPAStudent[5])):
          highestGPAStudent = studentData
-   print "Highest GPA Student: " + highestGPAStudent[1] + " " + highestGPAStudent[0] + "\nGPA: " + highestGPAStudent[5] + "\nTeacher: " + highestGPAStudent[7][:-2] + " " + highestGPAStudent[6] + "\nBus Route: " + highestGPAStudent[4]
+   print "Highest GPA Student: " + highestGPAStudent[1] + " " + highestGPAStudent[0] + "\nGPA: " + highestGPAStudent[5] + "\nTeacher: " + highestGPAStudent[7] + " " + highestGPAStudent[6] + "\nBus Route: " + highestGPAStudent[4]
 
 # Takes an array of student data strings, calculates the student with the lowest gpa and prints their name, gpa, teacher, and bus route
 def printLowestGPAStudent(studentQuery):
@@ -71,7 +106,7 @@ def printLowestGPAStudent(studentQuery):
       studentData = studentQuery[s].split(",")
       if(float(studentData[5]) < float(lowestGPAStudent[5])):
          lowestGPAStudent = studentData
-   print "Lowest GPA Student: " + lowestGPAStudent[1] + " " + lowestGPAStudent[0] + "\nGPA: " + lowestGPAStudent[5] + "\nTeacher: " + lowestGPAStudent[7][:-2] + " " + lowestGPAStudent[6] + "\nBus Route: " + lowestGPAStudent[4]
+   print "Lowest GPA Student: " + lowestGPAStudent[1] + " " + lowestGPAStudent[0] + "\nGPA: " + lowestGPAStudent[5] + "\nTeacher: " + lowestGPAStudent[7] + " " + lowestGPAStudent[6] + "\nBus Route: " + lowestGPAStudent[4]
 
 # Takes an array of student data strings, calculates the average GPA for a grade and prints it out
 def printAverageGPAForGrade(studentQuery, query):
