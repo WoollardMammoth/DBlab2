@@ -131,7 +131,8 @@ def main():
    studentsPerGrade = []
    while(choice.lower() != "q"):
       print2("\n\nEnter a letter to begin a search:\n")
-      print2("   S[tudent]\n   T[eacher]\n   B[us]\n   G[rade]\n   A[verage]\n   I[nfo]\n   Q[uit]\n> ")
+      print2("   S[tudent]\n   T[eacher]\n   B[us]\n   G[rade]\n   A[verage]\n"
+             "   C[lassroom]\n   E[nrollment]\n   I[nfo]\n   Q[uit]\n> ")
       try:
          choice = raw_input()
       except EOFError:
@@ -160,7 +161,7 @@ def main():
          else:
             print("Invalid query.")
 
-      if(choice.lower() == "t"):
+      elif(choice.lower() == "t"):
          print2("T[eacher]: <lastname>\n> ")
          try:
             query = raw_input()
@@ -176,7 +177,7 @@ def main():
          #function to search teacher name
 
 
-      if(choice.lower() == "b"):
+      elif(choice.lower() == "b"):
          print2("B[us]: <number>\n> ")
          try:
             query = raw_input()
@@ -189,31 +190,33 @@ def main():
          else:
             print("Invalid query.")
 
-      if(choice.lower() == "g"):
-         print2("G[rade]: <number> [H[igh]|L[ow]]\n> ")
+      elif(choice.lower() == "g"):
+         print2("G[rade]: (<number> [H[igh]|L[ow]]) | (<number> <T[eacher]>)\n> ")
          try:
             query = raw_input()
          except EOFError:
             return
          parts = query.split()
-         if(len(parts) > 2):
+         if(len(parts) > 2 or not parts[0].isdigit()):
             print("Invalid query.")
          elif(len(parts) == 2):
             #first entry is a number, check for valid H or L flags
-            dataQuery = queryStudentsByCriteria(parts[0], 2)
-            if(parts[1].lower() == "h"):
-               printHighestGPAStudent(dataQuery)
-            elif(parts[1].lower() == "l"):
-               printLowestGPAStudent(dataQuery)
+            if(parts[1].lower() == "t"):
+               print("Find all teachers who teach grade " + str(parts[0]) ) #NICK
             else:
-               print("Invalid query.")
+               dataQuery = queryStudentsByCriteria(parts[0], 2)
+               if(parts[1].lower() == "h"):
+                  printHighestGPAStudent(dataQuery)
+               elif(parts[1].lower() == "l"):
+                  printLowestGPAStudent(dataQuery)
+               else:
+                  print("Invalid query.")
          else:
             #First entry is a number, no flags present
             dataQuery = queryStudentsByCriteria(parts[0], 2)
             printStudents(dataQuery)
 
-
-      if(choice.lower() == "a"):
+      elif(choice.lower() == "a"):
          print2("A[verage]: <number>\n> ")
          try:
             query = raw_input()
@@ -227,13 +230,34 @@ def main():
             print("Invalid query.")
 
 
-      if(choice.lower() == "i"):
+      elif(choice.lower() == "i"):
          #function for grade by grade breakdown
          print2("I[nfo]")
          for grade in range(0, 7):
             dataQuery = queryStudentsByCriteria(str(grade), 2)
             studentsPerGrade.append(len(dataQuery))
          printStudentsPerGrade(studentsPerGrade)
+
+      elif(choice.lower() == "c"):
+         print2("C[lassroom]: <number> [T[eacher]]")
+         try:
+            query = raw_input()
+         except EOFError:
+            return
+         parts = query.split()
+         if(len(parts) > 2 or not parts[0].isdigit()):
+            print("Invalid query.")
+         elif(len(parts) == 2):
+            if(parts[1].lower() == "t"):
+               print("Find all teachers who use classroom number " + str(parts[0])) #NICK
+            else:
+               print("Invalid query.")
+         else:
+            print("List all students assigned to classroom number " + str(parts[0])) #NICK
+      elif(choice.lower() == "e"):
+         print("Output:\nClass number lowest, num students\n.\n.\n.\nClass number highest, num students") #NICK
+      else:
+         x = 6 #AKA DO NOTHING
 
    print2("Goodbye!")
 
