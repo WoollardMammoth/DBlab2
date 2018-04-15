@@ -4,7 +4,7 @@
 for num in {1..4}
 do 
 	echo Running Test_NR${num}
-	python schoolsearch.py -t ./Tests/Input/Test_NR${num} > ./Tests/MyOut/Test_NR${num}_MyOutput
+	python schoolsearch.py -t < ./Tests/Input/Test_NR${num} > ./Tests/MyOut/Test_NR${num}_MyOutput
 done 
 
 for num in {1..4}

@@ -41,8 +41,8 @@ def queryStudentsByCriteria(criteria, search_type):
       student = student[:-2]
       studentData = student.split(",")
       teacherData = queryTeacherByCriteria(studentData[3], 2) # Will always return a valid classroom if input files are valid
-      studentData.append(teacherData[0])
-      studentData.append(teacherData[1])
+      studentData.append(teacherData[0][0])
+      studentData.append(teacherData[0][1]) # Only adds the student's first teacher for now
       if studentData[search_type] == criteria:
          studentData[1] = studentData[1][+1:]
          studentList.append(",".join(studentData))
@@ -57,14 +57,19 @@ def queryTeacherByCriteria(criteria, search_type):
 
    criteria = criteria.upper()
 
+   teachers = []
    teacherData = []
    for teacher in teacher_file:
       teacherData = teacher.split(",")
       teacherData[1] = teacherData[1][+1:]
-      teacherData[2] = teacherData[2][+1:-2]
+      teacherData[2] = teacherData[2][+1:-2] # Check /r/n or EOF for this
+      # if teacherData[2][-1] != eof:
+      #    teacherData[2] = teacherData[2][+1:-2] # Check /r/n or EOF for this
+      # else:
+      #    teacherData[2] = teacherData[2][+1:] # Check /r/n or EOF for this
       if(teacherData[search_type] == criteria):
-         return teacherData
-   return []         
+         teachers.append(teacherData)
+   return teachers         
 
 # Takes an array of student data strings and prints the student's name, grade, classroom, and teacher
 def printStudentDataByName(studentQuery):
@@ -122,6 +127,54 @@ def printAverageGPAForGrade(studentQuery, query):
 def printStudentsPerGrade(studentsPerGrade):
    for grade in range(0, len(studentsPerGrade)):
       print("Grade %d: Students: %d\n" % (grade, studentsPerGrade[grade]))
+
+def printStudentByClassroom(classroom):
+   studentQuery = queryStudentsByCriteria(classroom, 3)
+   studentData = []
+   for student in studentQuery:
+      studentData = student.split(",")
+      print "Student: " + studentData[1] + " " + studentData[0]
+
+def printTeacherByClassroom(classroom):
+   teacherQuery = queryTeacherByCriteria(classroom, 2)
+   for teacherData in teacherQuery:
+      print "Teacher: " + teacherData[1] + " " + teacherData[0]
+
+def printTeacherByGrade(grade):
+   classroomsUsedByGrade = []
+   studentQuery = queryStudentsByCriteria(grade, 2)
+   teachers = []
+   teacherQuery = []
+   for student in studentQuery:
+      studentData = student.split(",")
+      if studentData[3] not in classroomsUsedByGrade:
+         classroomsUsedByGrade.append(studentData[3]) # The classroom (S)
+   for classroom in classroomsUsedByGrade:
+      teacherQuery = queryTeacherByCriteria(classroom, 2) # The classroom (T)
+      for teacher in teacherQuery:
+         teachers.append(teacher)
+   for teacherData in teachers:
+      print "Teacher: " + teacherData[1] + " " + teacherData[0]
+
+def printOrderedClassroomSizes():
+   try:
+      teacher_file = open("teachers.txt", "r")
+   except:
+      print("Error opening teacher file")
+      exit()
+
+   teacherData = []
+   classrooms = []
+   studentQuery = []
+   for teacher in teacher_file:
+      teacherData = teacher.split(",")
+      if teacherData[2] not in classrooms:
+         classrooms.append(teacherData[2][+1:-2])
+   classrooms = sorted(classrooms)
+
+   for classroom in classrooms:
+      studentQuery = queryStudentsByCriteria(classroom, 3)
+      print "Classroom " + classroom + ": " + str(len(studentQuery))
 
 def main():
    print2("Welcome to SchoolSearch")
@@ -202,7 +255,7 @@ def main():
          elif(len(parts) == 2):
             #first entry is a number, check for valid H or L flags
             if(parts[1].lower() == "t"):
-               print("Find all teachers who teach grade " + str(parts[0]) ) #NICK
+               printTeacherByGrade(parts[0])
             else:
                dataQuery = queryStudentsByCriteria(parts[0], 2)
                if(parts[1].lower() == "h"):
@@ -249,13 +302,13 @@ def main():
             print("Invalid query.")
          elif(len(parts) == 2):
             if(parts[1].lower() == "t"):
-               print("Find all teachers who use classroom number " + str(parts[0])) #NICK
+               printTeacherByClassroom(parts[0])
             else:
                print("Invalid query.")
          else:
-            print("List all students assigned to classroom number " + str(parts[0])) #NICK
+            printStudentByClassroom(parts[0])
       elif(choice.lower() == "e"):
-         print("Output:\nClass number lowest, num students\n.\n.\n.\nClass number highest, num students") #NICK
+         printOrderedClassroomSizes()
       else:
          x = 6 #AKA DO NOTHING
 
