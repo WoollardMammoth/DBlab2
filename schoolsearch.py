@@ -185,7 +185,7 @@ def main():
    while(choice.lower() != "q"):
       print2("\n\nEnter a letter to begin a search:\n")
       print2("   S[tudent]\n   T[eacher]\n   B[us]\n   G[rade]\n   A[verage]\n"
-             "   C[lassroom]\n   E[nrollment]\n   I[nfo]\n   Q[uit]\n> ")
+             "   C[lassroom]\n   E[nrollment]\n   I[nfo]\n   [A]N[alyze]\n Q[uit]\n> ")
       try:
          choice = raw_input()
       except EOFError:
@@ -307,12 +307,61 @@ def main():
                print("Invalid query.")
          else:
             printStudentByClassroom(parts[0])
+     
       elif(choice.lower() == "e"):
          printOrderedClassroomSizes()
+     
+      elif(choice.lower() == "n"):
+         print2("Analyze: \n")
+         GpaBreakdown();
+        
+
       else:
          x = 6 #AKA DO NOTHING
 
    print2("Goodbye!")
+
+
+def GpaBreakdown():
+
+   print("3.50 - 4.00: %.2f" % GpaPercentage(3.50, 4.00) + "%");
+   print("3.00 - 3.49: %.2f" % GpaPercentage(3.00, 3.49) + "%");
+   print("2.50 - 2.99: %.2f" % GpaPercentage(2.50, 2.99) + "%");
+   print("2.00 - 2.49: %.2f" % GpaPercentage(2.00, 2.49) + "%");
+   print("1.50 - 1.99: %.2f" % GpaPercentage(1.50, 1.99) + "%");
+   print("1.00 - 1.49: %.2f" % GpaPercentage(1.00, 1.49) + "%");
+   print("0.50 - 0.99: %.2f" % GpaPercentage(0.50, 0.99) + "%");
+   print("0.00 - 0.49: %.2f" % GpaPercentage(0.00, 0.40) + "%");
+
+
+def GpaPercentage(gpaLow, gpaHigh):
+   try:
+      list_file = open("list.txt", "r")
+   except:
+      print("Error opening list file")
+      exit()
+
+   total = 0;
+   count = 0;
+
+   for studentLine in list_file:
+      nextGpa = GetStudentGPA(studentLine);
+
+      if ((gpaLow <= nextGpa) and (nextGpa <= gpaHigh)):
+         count += 1;
+
+      total += 1;
+
+   if (total > 0):
+      return (float(count)/total) * 100;
+   else:
+      return 0;
+
+def GetStudentGPA(line):
+    studentData = line.split(",")
+    return float(studentData[5])
+
+
 
 if __name__ == "__main__":
     main()
