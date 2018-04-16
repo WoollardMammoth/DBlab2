@@ -318,7 +318,7 @@ def main():
          elif query.lower() == 't':
             gpaBreakdownByTeacher()
          elif query.lower() == 'b':
-            print("DO BUS GPA THINGS")
+            gpaBreakdownByBusRoute()
          else:
             print("Invalid query.")
         
@@ -328,14 +328,54 @@ def main():
 
    print2("Goodbye!")
 
-
-def gpaBreakdownByTeacher():
+def getValidBusRoutes():
    try:
-      list_file = open("teachers.txt", "r")
+      list_file = open("list.txt", "r")
    except:
       print("Error opening list file")
       exit()
-   for teacherLine in list_file:
+   busRoutes = []
+   studentData = []
+   for student in list_file:
+      studentData = student.split(",")
+      if studentData[4] not in busRoutes:
+         busRoutes.append(studentData[4])
+   return busRoutes
+
+def gpaPercentageByBusRoute(gpaLow, gpaHigh, busRoute):
+   studentQuery = queryStudentsByCriteria(busRoute, 4)
+   studentData = []
+   studentGPA = 0.0
+   gpaCount = 0
+   totalGPACount = len(studentQuery)
+   for student in studentQuery:
+      studentData = student.split(",")
+      studentGPA = float(studentData[5]) # Student GPA
+      if(studentGPA >= gpaLow and studentGPA <= gpaHigh):
+         gpaCount += 1
+   return float(gpaCount)/totalGPACount
+
+def gpaBreakdownByBusRoute():
+   busRoutes = getValidBusRoutes()
+   studentData = []
+   for busRoute in busRoutes:
+      print "Bus Route: " + busRoute
+      print("   3.50 - 4.00: %.2f" % gpaPercentageByBusRoute(3.50, 4.00, busRoute) + "%")
+      print("   3.00 - 3.49: %.2f" % gpaPercentageByBusRoute(3.00, 3.49, busRoute) + "%")
+      print("   2.50 - 2.99: %.2f" % gpaPercentageByBusRoute(2.50, 2.99, busRoute) + "%")
+      print("   2.00 - 2.49: %.2f" % gpaPercentageByBusRoute(2.00, 2.49, busRoute) + "%")
+      print("   1.50 - 1.99: %.2f" % gpaPercentageByBusRoute(1.50, 1.99, busRoute) + "%")
+      print("   1.00 - 1.49: %.2f" % gpaPercentageByBusRoute(1.00, 1.49, busRoute) + "%")
+      print("   0.50 - 0.99: %.2f" % gpaPercentageByBusRoute(0.50, 0.99, busRoute) + "%")
+      print("   0.00 - 0.49: %.2f" % gpaPercentageByBusRoute(0.00, 0.49, busRoute) + "%")
+
+def gpaBreakdownByTeacher():
+   try:
+      teacher_file = open("teachers.txt", "r")
+   except:
+      print("Error opening list file")
+      exit()
+   for teacherLine in teacher_file:
       teacherDetails = teacherLine.split(',')
       print(teacherDetails[1] + " " + teacherDetails[0])
       print("   3.50 - 4.00: %.2f" % gpaPercentageByTeacher(3.50, 4.00, teacherDetails[2]) + "%")
