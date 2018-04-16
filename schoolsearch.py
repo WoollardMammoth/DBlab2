@@ -185,7 +185,7 @@ def main():
    while(choice.lower() != "q"):
       print2("\n\nEnter a letter to begin a search:\n")
       print2("   S[tudent]\n   T[eacher]\n   B[us]\n   G[rade]\n   A[verage]\n"
-             "   C[lassroom]\n   E[nrollment]\n   I[nfo]\n   [A]N[alyze]\n Q[uit]\n> ")
+             "   C[lassroom]\n   E[nrollment]\n   I[nfo]\n   [A]N[alyze]\n   Q[uit]\n> ")
       try:
          choice = raw_input()
       except EOFError:
@@ -363,7 +363,8 @@ def gpaPercentageByTeacher(gpaLow, gpaHigh, teachersRoom):
    count = 0
 
    for studentLine in list_file:
-      if (studentLine.split(','))[3] == teachersRoom:
+      splits = studentLine.split(',')
+      if int(splits[3]) == int(teachersRoom):
          nextGpa = GetStudentGPA(studentLine)
 
          if ((gpaLow <= nextGpa) and (nextGpa <= gpaHigh)):
