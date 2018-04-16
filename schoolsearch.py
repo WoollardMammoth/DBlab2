@@ -62,11 +62,7 @@ def queryTeacherByCriteria(criteria, search_type):
    for teacher in teacher_file:
       teacherData = teacher.split(",")
       teacherData[1] = teacherData[1][+1:]
-      teacherData[2] = teacherData[2][+1:-2] # Check /r/n or EOF for this
-      # if teacherData[2][-1] != eof:
-      #    teacherData[2] = teacherData[2][+1:-2] # Check /r/n or EOF for this
-      # else:
-      #    teacherData[2] = teacherData[2][+1:] # Check /r/n or EOF for this
+      teacherData[2] = str(int(teacherData[2][+1:])) # Safely removes /r/n while accounting for EOF
       if(teacherData[search_type] == criteria):
          teachers.append(teacherData)
    return teachers         
@@ -169,7 +165,7 @@ def printOrderedClassroomSizes():
    for teacher in teacher_file:
       teacherData = teacher.split(",")
       if teacherData[2] not in classrooms:
-         classrooms.append(teacherData[2][+1:-2])
+         classrooms.append(str(int(teacherData[2][+1:]))) # Safely removes /r/n while accounting for EOF
    classrooms = sorted(classrooms)
 
    for classroom in classrooms:
@@ -185,7 +181,7 @@ def main():
    while(choice.lower() != "q"):
       print2("\n\nEnter a letter to begin a search:\n")
       print2("   S[tudent]\n   T[eacher]\n   B[us]\n   G[rade]\n   A[verage]\n"
-             "   C[lassroom]\n   E[nrollment]\n   I[nfo]\n   [A]N[alyze]\n Q[uit]\n> ")
+             "   C[lassroom]\n   E[nrollment]\n   I[nfo]\n   [A]N[alyze]\n   Q[uit]\n> ")
       try:
          choice = raw_input()
       except EOFError:
@@ -223,7 +219,7 @@ def main():
          parts = query.split()
          name = parts[0].upper()
          dataQuery = queryStudentsByCriteria(name, 6);
-         if(len(parts) == 1 and len(dataQuery) > 0):
+         if(len(parts) == 1):
             printStudents(dataQuery)
          else:
             print("Invalid query.")
@@ -270,7 +266,7 @@ def main():
             printStudents(dataQuery)
 
       elif(choice.lower() == "a"):
-         print2("A[verage]: <number>\n> ")
+         print2("A[verage]: <GradeNumber>\n> ")
          try:
             query = raw_input()
          except EOFError:
