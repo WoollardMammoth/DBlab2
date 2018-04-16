@@ -1,13 +1,13 @@
 #!/bin/bash
 
 ## Lab 1-2 Test
-for num in {1..4}
+for num in {1..5}
 do 
 	echo Running Test_NR${num}
 	python schoolsearch.py -t < ./Tests/Input/Test_NR${num} > ./Tests/MyOut/Test_NR${num}_MyOutput
 done 
 
-for num in {1..4}
+for num in {1..5}
 do 
 	echo Diff: Test_NR${num}_Output vs. Test_NR${num}_MyOutput
 	diff -y ./Tests/ExpectedOut/Test_NR${num}_Output ./Tests/MyOut/Test_NR${num}_MyOutput
