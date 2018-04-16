@@ -308,8 +308,19 @@ def main():
          printOrderedClassroomSizes()
      
       elif(choice.lower() == "n"):
-         print2("Analyze: \n")
-         GpaBreakdown();
+         print2("[A]N[alyze]: <O[verall]|T[eacher]|B[us]>")
+         try:
+            query = raw_input()
+         except EOFError:
+            return
+         if query.lower() == 'o':
+            GpaBreakdown()
+         elif query.lower() == 't':
+            gpaBreakdownByTeacher()
+         elif query.lower() == 'b':
+            print("DO BUS GPA THINGS")
+         else:
+            print("Invalid query.")
         
 
       else:
@@ -317,6 +328,51 @@ def main():
 
    print2("Goodbye!")
 
+
+def gpaBreakdownByTeacher():
+   try:
+      list_file = open("teachers.txt", "r")
+   except:
+      print("Error opening list file")
+      exit()
+   for teacherLine in list_file:
+      teacherDetails = teacherLine.split(',')
+      print(teacherDetails[1] + " " + teacherDetails[0])
+      print("   3.50 - 4.00: %.2f" % gpaPercentageByTeacher(3.50, 4.00, teacherDetails[2]) + "%")
+      print("   3.00 - 3.49: %.2f" % gpaPercentageByTeacher(3.00, 3.49, teacherDetails[2]) + "%")
+      print("   2.50 - 2.99: %.2f" % gpaPercentageByTeacher(2.50, 2.99, teacherDetails[2]) + "%")
+      print("   2.00 - 2.49: %.2f" % gpaPercentageByTeacher(2.00, 2.49, teacherDetails[2]) + "%")
+      print("   1.50 - 1.99: %.2f" % gpaPercentageByTeacher(1.50, 1.99, teacherDetails[2]) + "%")
+      print("   1.00 - 1.49: %.2f" % gpaPercentageByTeacher(1.00, 1.49, teacherDetails[2]) + "%")
+      print("   0.50 - 0.99: %.2f" % gpaPercentageByTeacher(0.50, 0.99, teacherDetails[2]) + "%")
+      print("   0.00 - 0.49: %.2f" % gpaPercentageByTeacher(0.00, 0.49, teacherDetails[2]) + "%")
+      
+
+def gpaPercentageByTeacher(gpaLow, gpaHigh, teachersRoom):
+   try:
+      list_file = open("list.txt", "r")
+   except:
+      print("Error opening list file")
+      exit()
+
+   total = 0
+   count = 0
+
+   for studentLine in list_file:
+      splits = studentLine.split(',')
+      if int(splits[3]) == int(teachersRoom):
+         nextGpa = GetStudentGPA(studentLine)
+
+         if ((gpaLow <= nextGpa) and (nextGpa <= gpaHigh)):
+            count += 1
+
+         total += 1
+
+   if (total > 0):
+      return (float(count)/total) * 100
+   else:
+      return 0
+      
 
 def GpaBreakdown():
 
